@@ -1,14 +1,10 @@
-import { AuthLayout } from './auth/layouts/AuthLayout';
-import ChatLayout from './chats/layouts/ChatLayout';
-import ChatPage from './chats/pages/ChatPage';
+import { RouterProvider } from 'react-router';
+import AppRouter from './router/AppRouter';
 
 export const App = () => {
   return (
     <>
-      {/* <AuthLayout /> */}
-      <ChatLayout>
-        <ChatPage />
-      </ChatLayout>
+      <RouterProvider router={AppRouter} />
     </>
   );
 };

@@ -9,3 +9,4 @@ La aplicacion crea un chat sin manejo de backend, ya que lo importante es el fro
 - React Router
 - @tanstack/query
 - zustand (manejo de estado)
+- react-hook-form
