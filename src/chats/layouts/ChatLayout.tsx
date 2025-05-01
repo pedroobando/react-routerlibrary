@@ -1,14 +1,31 @@
 import { FC } from 'react';
-import { X } from 'lucide-react';
-import { Outlet } from 'react-router';
+import { LogOut, X } from 'lucide-react';
+import { Link, Outlet, useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
 import { ContactList } from '@/chats/components/ContactList';
-import { ContactInfo } from '@/chats/components/ContactInfo';
-import { NoContactSelected } from '../components/NoContactSelected';
-import { ContactInfoSkeleton } from '../components/ContactInfoSkeleton';
+import { ContactDetails } from '../components/ContactDetail';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { checkAuth } from '../fake/fake-data';
 
 const ChatLayout: FC = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const onLogOut = () => {
+    localStorage.removeItem('token');
+    queryClient.invalidateQueries({ queryKey: ['user'] });
+    navigate('/auth', { replace: true });
+  };
+
+  const { data: user } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => {
+      const token = localStorage.getItem('token');
+      return checkAuth(token ?? '');
+    },
+  });
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar */}
@@ -16,10 +33,19 @@ const ChatLayout: FC = () => {
         <div className="p-4 border-b">
           <div className="flex items-center gap-2">
             <div className="h-6 w-6 rounded-full bg-primary" />
-            <span className="font-semibold">NexTalk</span>
+            <Link to={'/chat'}>
+              <span className="font-semibold">{user?.name ?? '...'}</span>
+            </Link>
           </div>
         </div>
         <ContactList />
+
+        <div className="p-4 border-t w-full">
+          <Button className="w-full cursor-pointer" variant="outline" size="sm" onClick={onLogOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -45,9 +71,7 @@ const ChatLayout: FC = () => {
           <div className="h-14 border-b px-4 flex items-center">
             <h2 className="font-medium">Contact details</h2>
           </div>
-          <NoContactSelected />
-          {/* <ContactInfoSkeleton /> */}
-          {/* <ContactInfo /> */}
+          <ContactDetails />
         </div>
       </div>
     </div>
